@@ -33,10 +33,10 @@ Source: Kaggle – Instagram Fake and Real Accounts Dataset
 
 ##  Cost Comparison
 Model	Deployment Cost	Net Cost	Annual Estimate
-Current IG Model	—	—	$240,000
-Proposed Model (AWS)	$60,000	~$43,000	$60,000 Total
+Current Model	—	—	$240,000
+Proposed Model —	—		$60,000 Total
 
-### Instagram saves approximately $180,000 per year.
+### Company saves approximately $180,000 per year.
 
  ## Technical Workflow
 
@@ -51,6 +51,6 @@ Proposed Model (AWS)	$60,000	~$43,000	$60,000 Total
 Best Model: Random Forest
 Performance: AUC = 0.96
 Savings: $180,000 annually
-Outcome: Increases Instagram users’ trust and safety while maintaining platform integrity at lower cost.
+Outcome: Increases users’ trust and safety while maintaining platform integrity at lower cost.
 
 ###  Random Forest offers the best balance of accuracy and cost-efficiency.
