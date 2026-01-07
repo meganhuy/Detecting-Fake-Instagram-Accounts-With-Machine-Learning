@@ -7,7 +7,9 @@ This project focuses on detecting fake and real Instagram accounts efficiently a
 ## Objectives
 
 -Develop an ML model to classify Instagram accounts as fake or real.
+
 -Optimize for accuracy, sensitivity, and specificity while reducing cost.
+
 -Deploy the model for scalability and cost efficiency.
 
 ## Dataset
