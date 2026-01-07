@@ -2,8 +2,7 @@
 
 ## Project Overview
 
-This project focuses on detecting fake and real Instagram accounts efficiently and cost-effectively. Currently, approximately 28% of Instagram accounts are fake, and Instagram spends around $240,000 per year on detection and platform integrity.
-Our goal is to build a machine learning model that maintains or improves detection accuracy at a fraction of the cost — reducing annual costs to $60,000, saving Instagram roughly $180,000 per year.
+This project focuses on detecting fake and real Instagram accounts efficiently and cost-effectively. Our goal is to build several machine learning models and select the model that maintains and improves detection accuracy while reducing annual cost.
 
 ## Objectives
 
@@ -14,10 +13,6 @@ Our goal is to build a machine learning model that maintains or improves detecti
 ## Dataset
 
 Source: Kaggle – Instagram Fake and Real Accounts Dataset
-
-Key Features:
-
-
 
 ## Key Findings:
 
