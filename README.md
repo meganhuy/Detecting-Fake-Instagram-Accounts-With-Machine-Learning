@@ -27,7 +27,9 @@ Source: Kaggle – Instagram Fake and Real Accounts Dataset
 ## Models Tested
 
 1.Logistic Regression (Baseline model)
+
 2.K-Nearest Neighbors (KNN)	(Most cost-effective)
+
 3.Random Forest	(Best Performing)
 
 ## Metric:	AUC,	Sensitivity,	Specificity	
@@ -36,7 +38,9 @@ Source: Kaggle – Instagram Fake and Real Accounts Dataset
 
 ##  Cost Comparison
 Model	Deployment Cost	Net Cost	Annual Estimate
+
 Current Model	—	—	$240,000
+
 Proposed Model —	—		$60,000 Total
 
 ### Company saves approximately $180,000 per year.
@@ -44,16 +48,23 @@ Proposed Model —	—		$60,000 Total
  ## Technical Workflow
 
 1. Data Cleaning & Preprocessing
+
 2. Handle missing values, feature encoding, and scaling.
+
 3. Exploratory Data Analysis (EDA)
+
 4. Correlation, feature visualization, and statistical insights.
+
 5.  Model Training (Random Forest, Logistic Regression, and KNN models)
 
 ##  Results & Conclusion
 
 Best Model: Random Forest
+
 Performance: AUC = 0.96
+
 Savings: $180,000 annually
+
 Outcome: Increases users’ trust and safety while maintaining platform integrity at lower cost.
 
 ###  Random Forest offers the best balance of accuracy and cost-efficiency.
