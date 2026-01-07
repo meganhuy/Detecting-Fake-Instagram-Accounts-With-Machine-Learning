@@ -1,0 +1,495 @@
+---
+title: "Instagram Project"
+author: "Megan Huy"
+date: "2025-08-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Libraries
+library(readr)
+library(ggplot2)
+library(car)
+library(ggfortify)
+library(caret)
+library(tidyr)
+library(dplyr)
+library(ggcorrplot)
+library(glmnet) 
+library(randomForest)
+library(pROC)
+library(forcats)
+library(MLmetrics)
+```
+```{r}
+#Import Data for EDA
+train_data = read.csv("C:/Users/Megan Huy/Documents/Instagram Project/instagram-data-train.csv")
+test_data = read.csv("C:/Users/Megan Huy/Documents/Instagram Project/instagram-data-test.csv")
+```
+
+```{r}
+#Join Train and Test Set 
+train_data$dataset = "train"
+test_data$dataset  = "test"
+instagram_data = bind_rows(train_data, test_data)
+```
+
+```{r}
+#Check Data Types
+str(instagram_data)
+```
+#Comments
+The targert variable is fake accounts (fake). There is a variable called "dataset" after merging the two csv files but we will drop it. There's 696 observations total.
+
+```{r}
+#Rename Features
+instagram_data = instagram_data %>%
+  rename(
+    profile_pic = profile.pic,
+    username_with_numbers = nums.length.username,
+    wordcount_fullname = fullname.words,
+    fullname_with_numbers = nums.length.fullname,
+    fullname_is_username = name..username,
+    bio_length = description.length,
+    external_url = external.URL,
+    private = private,
+    posts = X.posts,
+    followers = X.followers,
+    follows = X.follows,
+    fake = fake,
+    dataset = dataset
+  )
+```
+
+```{r}
+# Convert to Percentage for Table
+percent_table2 = instagram_data %>%
+  count(fake) %>%
+  mutate(percent = n / sum(n) * 100,
+         label = ifelse(fake == 1, "Fake", "Real"))
+
+# Stacked bar plot
+percent_table2$bar = "Accounts"
+ggplot(percent_table2, aes(x = bar, y = percent, fill = label)) +
+  geom_col(width = 0.6, color = "black") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")), 
+            position = position_stack(vjust = 0.5), size = 4, color = "white") +
+  scale_fill_manual(values = c("Fake" = "hotpink", "Real" = "purple")) +
+  labs(title = "Percent Proportion of Fake vs Real Accounts",
+       x = "", y = "Percentage", fill = "Account Type") +
+  theme_minimal()
+```
+
+###Comments
+There's an equal distribution of fake accounts and real accounts.
+
+```{r}
+#Check For Missing Values
+colSums(is.na(instagram_data))
+missing_percent2 = colMeans(is.na(instagram_data)) * 100
+print(missing_percent2)
+```
+###Comments
+There are no missing values in the dataset.
+```{r}
+#Summary for Instagram Data
+summary(instagram_data)
+```
+```{r}
+#Drop Dataset Variable
+instagram_data = instagram_data %>% select(-dataset)
+```
+
+```{r}
+#Get 95% Cutoffs to Zoom In
+cutoffs = instagram_data %>%
+  summarise(across(c(username_with_numbers, wordcount_fullname, bio_length, 
+                     fullname_with_numbers, followers, follows, posts), 
+                   ~ quantile(., 0.95, na.rm = TRUE))) %>%
+  pivot_longer(cols = everything(), names_to = "variable", values_to = "cutoff")
+
+# Pivot instagram_data to Longer Format
+numeric_long = instagram_data %>%
+  pivot_longer(cols = c(username_with_numbers, wordcount_fullname, bio_length, 
+                     fullname_with_numbers, followers, follows, posts),
+               names_to = "variable", values_to = "value")
+
+# Join 
+numeric_data_zoom = numeric_long %>%
+  left_join(cutoffs, by = "variable") %>%
+  filter(value <= cutoff)
+
+# Plot Histogram
+ggplot(numeric_data_zoom, aes(x = value)) +
+  geom_histogram(fill = "purple", color = "white", bins = 30) +
+  facet_wrap(~ variable, scales = "free", ncol = 2) +
+  labs(title = "Histograms of Numeric Variables",
+       x = NULL, y = "Frequency") +
+  theme_minimal()
+```
+###Comments
+Most numerical variables are heavily-skewed.
+
+```{r}
+#Select Features to Compare to Fake
+features_df = instagram_data %>%
+  select(where(is.numeric))
+
+#Compute Correlation Matrix
+cor_matrix = cor(features_df, use = "complete.obs")
+
+# Plot Matrix
+ggcorrplot(cor_matrix,
+           type = "lower",        
+           lab = TRUE,  
+           lab_col = "black",
+           lab_size = 2.5,
+           title = "Correlation Matrix Between Features",
+           colors = c("lightyellow", "pink", "purple"))
+```
+###Comments
+There is strong positive, correlation between fake accounts and username with numbers. There is a strong, negeative correlation between fake accounts and profile pictures. 
+
+```{r}
+#Percent Proportion
+
+#Define Binary Features
+binary_features = c("external_url", "private", "profile_pic", "fullname_is_username")
+
+#Prepare Long Data
+long_data = instagram_data %>%
+  mutate(
+    fake = factor(fake, levels = c(1, 0), labels = c("Fake", "Real"))
+  ) %>%
+  pivot_longer(cols = all_of(binary_features), names_to = "feature", values_to = "value") %>%
+  filter(value == 1) %>%  
+  mutate(
+    feature = recode(feature,
+      "external_URL" = "External URL",
+      "private" = "Private Account",
+      "profile_pic" = "Profile Picture",
+      "fullname_is_username" = "Full Name is the Username"
+    )
+  )
+
+#Count and Compute Percentage
+plot_data = long_data %>%
+  count(feature, fake) %>%
+  group_by(feature) %>%
+  mutate(percent = n / sum(n) * 100)
+
+#Plot Percent Bar Graphs
+ggplot(plot_data, aes(x = feature, y = percent, fill = fake)) +
+  geom_bar(stat = "identity", width = 0.7, color="black") +
+  labs(
+    title = "Distribution of Real vs Fake Accounts with Binary Variables",
+    x = "Features", y = "Percentage",
+    fill = "Account Type"
+  ) +
+   geom_text(aes(label = paste0(round(percent, 1), "%")), 
+            position = position_stack(vjust = 0.5), size = 4, color = "white") +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  scale_fill_manual(values = c("Real" = "purple", "Fake" = "hotpink")) +
+theme(axis.text.x = element_text(angle = 30, hjust = 1))
+```
+###Comments
+There were no fake accounts with external URL. There were more fake accounts with full name as their username and less fake accounts were set to private or had a picture in their profile.
+
+```{r}
+#Run Full Logistic Model
+full_model = glm(fake ~ profile_pic + fullname_is_username + external_url + private +
+    username_with_numbers + fullname_with_numbers + wordcount_fullname +
+    bio_length + posts + followers + follows, data = instagram_data, family = "binomial")
+```
+
+```{r}
+#Summary of Model
+summary(full_model)
+```
+
+```{r}
+#Odd Ratios 
+odds_ratios = exp(coef(full_model))
+print(odds_ratios)
+```
+
+###Comments
+The likelihood of fake accounts is with features that have odds ratio > 1. This includes four features. They are full names with numbers, full name as the username, username with numbers, and follows. 
+
+```{r}
+# 95% Confidence Intervals 
+conf_int = exp(confint.default(full_model))
+print(conf_int)
+```
+###Comments
+There is strong effect but variability is large for full name as username, full name with numbers, and username with numbers. There is a small effect for accounts with follows.
+
+```{r}
+# P-values
+summary_model = summary(full_model)
+p_values = summary_model$coefficients[, 4]
+print(p_values)
+```
+
+###Comments
+The four features have p-values <0.001. Therefore, they are significant.
+
+```{r}
+#Start Random Forest by Making Target Variable Fake as Factor
+instagram_data$fake = as.factor(instagram_data$fake)
+```
+
+```{r}
+# Train Random Forest
+set.seed(123)  
+rf_model = randomForest(
+  fake ~ ., 
+  data = instagram_data,
+  importance = TRUE,
+  ntree = 500
+)
+```
+
+```{r}
+# Get importance as data frame
+var_imp_df = data.frame(
+  Variable = rownames(randomForest::importance(rf_model)),
+  Importance = randomForest::importance(rf_model)[, "MeanDecreaseGini"]
+)
+```
+```{r}
+# Plot
+ggplot(var_imp_df, aes(x = reorder(Variable, Importance), y = Importance)) +
+  geom_col(fill = "purple") +
+  coord_flip() +
+  labs(
+    title = "Random Forest Variable Importance",
+    x = "Variable",
+    y = "Mean Decrease in Gini"
+  ) +
+  theme_minimal()
+```
+
+###Comments
+We chose the five, top predictors for the reduced logistic regression model.
+
+```{r}
+#Run Logistic Model with Selection from Gini
+reduced_model = glm(fake ~ followers + username_with_numbers + posts + profile_pic + bio_length,
+                   data = instagram_data, 
+                   family = "binomial")
+
+```
+
+```{r}
+#Summary
+summary(reduced_model)
+```
+```{r}
+#Odd Ratios 
+odds_ratios = exp(coef(reduced_model))
+print(odds_ratios)
+```
+```{r}
+# 95% Confidence Intervals (Exp)
+conf_int = exp(confint(reduced_model))
+print(conf_int)
+```
+
+```{r}
+#Compare the Full to the Selected Logistic Regression
+AIC(full_model, reduced_model)
+```
+###Comments
+Given AIC, we decided to keep the full model and use for interpretation. 
+The full model had a substantially lower AIC than the selected model, indicating that it provided a better overall fit to the data despite having more predictors.
+
+We retained the full model for interpretation, as it captured more of the relevant relationships in the data than the reduced model. We will examine the odds ratios from the full model to quantify how changes in each predictor affected the odds of an account being classified as Fake, identifying which features increases those odds.
+
+```{r}
+#Set up for Predictive Modeling
+
+#Restore Data
+train_data = read.csv("C:/Users/Megan Huy/Documents/Instagram Project/instagram-data-train.csv")
+test_data = read.csv("C:/Users/Megan Huy/Documents/Instagram Project/instagram-data-test.csv")
+
+#Join Train and Test Set 
+train_data$dataset = "train"
+test_data$dataset  = "test"
+instagram_data2 = bind_rows(train_data, test_data)
+```
+
+```{r}
+#Rename Features
+instagram_data2 = instagram_data2 %>%
+  rename(
+    profile_pic = profile.pic,
+    username_with_numbers = nums.length.username,
+    wordcount_fullname = fullname.words,
+    fullname_with_numbers = nums.length.fullname,
+    fullname_is_username = name..username,
+    bio_length = description.length,
+    external_url = external.URL,
+    private = private,
+    posts = X.posts,
+    followers = X.followers,
+    follows = X.follows,
+    fake = fake,
+    dataset = dataset
+  )
+```
+
+```{r}
+#Recode Fake as Factor
+instagram_data2$fake = factor(instagram_data2$fake, levels = c(0, 1), labels = c("no", "yes"))
+```
+
+```{r}
+#Select Variables
+model_vars = c("fake","followers", "fullname_is_username", "username_with_numbers", "fullname_with_numbers", "follows")
+              
+```
+
+```{r}
+#Model
+instagram_data2 = instagram_data2 %>%
+  select(all_of(model_vars)) %>%
+  na.omit()
+```
+
+```{r}
+#Check if Fake has valid levels
+table(instagram_data2$fake)
+```
+
+```{r}
+# 80/20 Train-Test Split
+set.seed(123)
+split_index = createDataPartition(instagram_data2$fake, p = 0.8, list = FALSE)
+train_set = instagram_data2[split_index, ]
+test_set = instagram_data2[-split_index, ]
+```
+```{r}
+#Make "yes" (fake) the positive class 
+train_set$fake = relevel(train_set$fake, ref = "yes")
+test_set$fake = relevel(test_set$fake, ref = "yes")
+```
+```{r}
+#Check if test_set still has both classes
+table(test_set$fake)
+```
+###Comments
+There are 69 observations from the test set. This represents 20% of the dataset.
+
+```{r}
+#Cross Validation
+ctrl = trainControl(method = "cv", number = 10,
+                     classProbs = TRUE,
+                     summaryFunction = twoClassSummary,
+                     savePredictions = TRUE)
+```
+
+```{r}
+#Random Forest
+set.seed(123)
+rf_model = train(fake ~ ., 
+                  data = train_set,
+                  method = "rf",
+                  metric = "ROC",
+                  trControl = ctrl)
+
+```
+
+```{r}
+#KNN
+set.seed(123)
+knn_model = train(fake ~ ., 
+                   data = train_set,
+                   method = "knn",
+                   preProcess = c("center", "scale"),
+                   metric = "ROC",
+                   trControl = ctrl)
+```
+
+```{r}
+#Logistic Regression
+set.seed(123)
+log_model = train(fake ~ ., 
+                   data = train_set,
+                   method = "glm",
+                   family = "binomial",
+                   metric = "ROC",
+                   trControl = ctrl)
+
+```
+
+```{r}
+#Evaluate Test Set
+
+# Random Forest
+rf_pred = predict(rf_model, test_set)
+rf_prob = predict(rf_model, test_set, type = "prob")
+rf_cm = confusionMatrix(rf_pred, test_set$fake, positive = "yes")
+rf_roc = roc(test_set$fake, rf_prob$yes)
+```
+```{r}
+# Logistic Regression
+log_pred = predict(log_model, test_set)
+log_prob = predict(log_model, test_set, type = "prob")
+log_cm = confusionMatrix(log_pred, test_set$fake)
+log_roc = roc(test_set$fake, log_prob$yes)
+```
+```{r}
+# KNN
+knn_pred = predict(knn_model, test_set)
+knn_prob = predict(knn_model, test_set, type = "prob")
+knn_cm = confusionMatrix(knn_pred, test_set$fake, positive = "yes")
+knn_roc = roc(test_set$fake, knn_prob$yes)
+```
+
+```{r}
+#Actual Fake
+actual = test_set$fake
+```
+```{r}
+# Random Forest
+rf_cm = confusionMatrix(rf_pred, actual)
+print(rf_cm)
+```
+```{r}
+# Logistic Regression
+log_cm = confusionMatrix(log_pred, actual)
+print(log_cm)
+```
+```{r}
+# K-Nearest Neighbors
+knn_cm = confusionMatrix(knn_pred, actual)
+print(knn_cm)
+```
+```{r}
+# Calculate F1 Scores
+F1_Score(y_pred = rf_pred, y_true = test_set$fake, positive = "yes")
+F1_Score(y_pred = log_pred, y_true = test_set$fake, positive = "yes")
+F1_Score(y_pred = knn_pred, y_true = test_set$fake, positive = "yes")
+```
+
+```{r}
+plot(log_roc, col = "orange", lwd = 2, main = "ROC Curves - Test Set")
+plot(rf_roc, col = "forestgreen", lwd = 2, add = TRUE)
+plot(knn_roc, col = "purple", lwd = 2, add = TRUE)
+
+legend("bottomright",
+       legend = c("Logistic", "Random Forest", "KNN"),
+       col = c("orange", "forestgreen", "purple"),
+       lwd = 2)
+```
+
+```{r}
+cat("AUC - Random Forest:", auc(rf_roc), "\n")
+cat("AUC - Logistic Regression:", auc(log_roc), "\n")
+cat("AUC - KNN:", auc(knn_roc), "\n")
+```
