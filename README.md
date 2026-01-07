@@ -17,8 +17,11 @@ Source: Kaggle – Instagram Fake and Real Accounts Dataset
 ## Key Findings:
 
 -Profile Picture: Strong negative correlation with fake accounts (r = -0.62).
+
 -Username with Numbers: Moderate positive correlation with fake accounts (r = 0.57).
+
 -Fake accounts are less likely to have profile pictures or external URLs.
+
 -Fake accounts are more likely to have usernames resembling full names or containing numbers.
 
 ## Models Tested
