@@ -115,11 +115,15 @@ Three supervised learning models were evaluated:
 
 ## Model Performance
 
+<div align="center">
+
 | Model | Accuracy | Precision | Sensitivity | Specificity | F1 Score | AUC |
 |------|----------|-----------|-------------|-------------|----------|-----|
 | Logistic Regression | 89.86% | 95.08% | 84.06% | **95.65%** | 0.892 | 0.944 |
 | **Random Forest (Best Model)** | **90.58%** | 93.75% | **86.96%** | 94.20% | **0.902** | **0.963** |
 | KNN | 83.33% | 85.94% | 79.71% | 86.96% | 0.827 | 0.901 |
+
+</div>
 
 <p align="center">
   <img src="images/ROC Curve.png" alt="ROC Curve" width="800"/>
@@ -143,12 +147,17 @@ This makes it the most effective model for distinguishing fake from real account
 To better understand model behavior, the following were used:
 
 - **Logistic Regression (odds ratios)**
+
+<div align="center">
+  
   | Variable | Odd Ratio | 95% CI lower | 95% CI upper | P-value|
 |------|----------|-----------|-------------|-------------|
 | Follows | 1.0011 | 1.0007 | 1.0016 | <.001 |
 | Full Name = Username | 6.7226 | .8000 | 144.0300 | <.001 |
 | Full Name w/ Numbers | 12.3592 | .0800 | 10,477.9300 | <.001 |
 | Username w/ Numbers | 1,355.8860 | 176.0200 | 12,710.9200 | <.001 |
+
+</div>
 
 - **Random Forest (feature importance using Gini index)**
 
