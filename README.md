@@ -45,7 +45,10 @@ The goal is to recommend a model that performs well statistically while also sup
 
 - **Source:** Kaggle – Instagram Fake and Real Accounts Dataset  
 - **Total observations:** 696 accounts  
-- **Class balance:** 50% fake / 50% real  
+- **Class balance:**
+  <p align="center">
+  <img src="images/Percent Distribution.png" alt="Class Balance" width="400"/>
+</p>
 
 ### Features used
 - Profile picture  
