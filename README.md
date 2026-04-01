@@ -102,9 +102,9 @@ Three supervised learning models were evaluated:
 
 | Model | Accuracy | Precision | Sensitivity | Specificity | F1 Score | AUC |
 |------|----------|-----------|-------------|-------------|----------|-----|
-| Logistic Regression | 89.86% | 95.08% | 84.06% | 95.65% | 0.892 | 0.944 |
+| Logistic Regression | 89.86% | 95.08% | 84.06% | **95.65%** | 0.892 | 0.944 |
 | KNN | 83.33% | 85.94% | 79.71% | 86.96% | 0.827 | 0.901 |
-| Random Forest | **90.58%** | 93.75% | **86.96%** | 94.20% | **0.902** | **0.963** |
+| **Random Forest (Best Model)** | **90.58%** | 93.75% | **86.96%** | 94.20% | **0.902** | **0.963** |
 
 ### Key Takeaway
 
