@@ -111,8 +111,8 @@ The Random Forest model achieves the highest AUC, demonstrating strong ability t
 **Interpretation:**
 - True Positives: correctly identified fake accounts  
 - True Negatives: correctly identified real accounts  
-- False positives help protect real users  
-- False negatives improve platform safety  
+- False Positives: help protect real users  
+- False Negatives: improve platform safety  
 
 ---
 
@@ -151,7 +151,7 @@ Random Forest delivers the strongest overall performance while remaining computa
 ## Tools
 
 - R (`caret`, `randomForest`, `pROC`, `ggplot2`, `dplyr`, `tidyr`)
-
+- Python (`pandas`, `numpy`, `scikit-learn`, `statsmodels`, `matplotlib`, `seaborn`)
 ---
 
 ## Key Skills Demonstrated
