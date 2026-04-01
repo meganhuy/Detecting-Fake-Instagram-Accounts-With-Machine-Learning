@@ -2,236 +2,141 @@
 
 ## Project Overview
 
-This project applies **data science and decision science** to the problem of detecting fake Instagram accounts using machine learning. The objective is not only to build an accurate classification model, but also to identify a solution that balances **predictive performance, scalability, and cost efficiency**.
+This project applies **data science and decision science** to detect fake Instagram accounts using machine learning, with a focus on balancing **predictive performance and practical deployment considerations**.
 
-Fake account detection is a critical platform integrity problem that impacts **user trust, safety, and overall engagement quality**. In practice, selecting the best model requires more than maximizing accuracy alone. It involves evaluating trade-offs between:
+Fake account detection impacts platform trust, safety, and user experience. Rather than optimizing for accuracy alone, this project evaluates models based on their ability to balance:
 
-- correctly identifying fake accounts  
-- minimizing false positives on real accounts  
-- maintaining a cost-efficient deployment strategy at scale  
+- fraud detection (sensitivity)  
+- protection of real users (specificity)  
+- overall model performance (AUC)  
 
-To address this, multiple machine learning models were developed and systematically compared using structured Instagram account features. Each model was evaluated using classification metrics such as **AUC, sensitivity, specificity, accuracy, precision, and F1-score**, and the results were interpreted through a decision science lens to identify the model that offers the strongest **performance-to-cost trade-off**.
+The final model, **Random Forest**, achieved the strongest overall performance:
 
-The final analysis shows that **Random Forest** delivers the strongest overall performance, achieving an **AUC of 0.963**, with **86.96% sensitivity** and **94.20% specificity**, making it the best overall candidate for deployment.
-
----
-
-## Business Problem
-
-Social media platforms must continuously detect fraudulent accounts to preserve **platform integrity** and protect real users. However, this introduces an important decision problem:
-
-**How can fake accounts be detected accurately without relying on unnecessarily expensive or overly complex models?**
-
-Fake account detection can be framed as both:
-
-- a **machine learning classification problem**  
-- a **decision science optimization problem**  
-
-The goal is to recommend a model that performs well statistically while also supporting practical, scalable, and cost-conscious deployment.
+- **AUC: 0.963**  
+- **Sensitivity: 86.96%**  
+- **Specificity: 94.20%**  
 
 ---
 
-## Objectives
+## Problem Statement
 
-- Build machine learning models to classify Instagram accounts as **fake** or **real**  
-- Compare multiple models using predictive performance metrics  
-- Identify key features associated with fake accounts  
-- Evaluate trade-offs from both technical and decision-making perspectives  
-- Recommend the best model based on **performance, interpretability, and cost-efficiency**  
+Social media platforms must continuously detect fake accounts to maintain **user trust, platform safety, and content quality**. However, identifying fraudulent accounts at scale introduces important trade-offs.
+
+Highly sensitive models can improve fraud detection but risk incorrectly flagging legitimate users, while overly conservative models may fail to detect harmful accounts. Additionally, more complex models may improve accuracy but introduce unnecessary computational overhead.
+
+The challenge is to develop a model that not only performs well statistically, but also balances **detection accuracy, reliability, and practical deployment considerations**.
+
+This project addresses that challenge by evaluating multiple machine learning models and identifying the solution that provides the strongest overall **performance-to-reliability trade-off**.
 
 ---
 
 ## Dataset
 
-- **Source:** Kaggle – Instagram Fake and Real Accounts Dataset  
-- **Total observations:** 696 accounts  
-- **Class balance:**
-  <p align="center">
-  <img src="images/Percent Distribution.png" alt="Class Balance" width="800"/>
-</p>
+- 696 Instagram accounts  
+- Balanced dataset (50% fake / 50% real)  
+- No missing values  
 
-### Features used
+**Key features:**
 - Profile picture  
-- Username with numbers  
-- Full name word count  
-- Full name with numbers  
-- Full name equals username  
+- Username patterns  
+- Followers / following  
 - Bio length  
 - External URL  
-- Private account  
-- Number of posts  
-- Number of followers  
-- Number of follows  
-
-The dataset contains **no missing values**, allowing the analysis to focus on feature relationships and model performance.
-
----
-
-## Exploratory Data Analysis
-
-The exploratory analysis revealed several meaningful patterns associated with fake accounts:
-
-- Accounts with a **profile picture** are less likely to be fake  
-- Accounts with **numbers in the username** are more likely to be fake  
-- Fake accounts are less likely to include an **external URL**  
-- Fake accounts are more likely to have usernames that appear autogenerated or heavily numeric
-
-<p align="center">
-  <img src="images/Distribution of Binary Variables.png" alt="Binary Variables" width="800"/>
-</p>
-
-<p align="center">
-  <img src="images/Correlation Matrix.png" alt="Correlation Matrix" width="800"/>
-</p>
-
-Several numerical features were also found to be heavily skewed, which informed model selection and interpretation.
-
-<p align="center">
-  <img src="images/Histogram of Numerical Variables.png" alt="Numerical Variables" width="800"/>
-</p>
 
 ---
 
 ## Modeling Approach
 
-Three supervised learning models were evaluated:
+**Models evaluated:**
+- Logistic Regression (baseline + interpretability)  
+- K-Nearest Neighbors (benchmark)  
+- Random Forest (ensemble model)  
 
-1. **Logistic Regression**  
-   Baseline model used for interpretability and statistical insight  
-
-2. **K-Nearest Neighbors (KNN)**  
-   Simpler benchmark model with lower expected computational complexity  
-
-3. **Random Forest**  
-   Ensemble model used to improve predictive performance and capture nonlinear relationships  
-
-### Validation Strategy
-
+**Validation strategy:**
 - 80/20 train-test split  
 - 10-fold cross-validation  
-- ROC/AUC used as the primary optimization metric  
+- ROC/AUC optimization  
 
 ---
 
 ## Model Performance
 
-<div align="center">
-
 | Model | Accuracy | Precision | Sensitivity | Specificity | F1 Score | AUC |
 |------|----------|-----------|-------------|-------------|----------|-----|
-| Logistic Regression | 89.86% | 95.08% | 84.06% | **95.65%** | 0.892 | 0.944 |
+| Logistic Regression | 89.86% | **95.08%** | 84.06% | **95.65%** | 0.892 | 0.944 |
 | **Random Forest (Best Model)** | **90.58%** | 93.75% | **86.96%** | 94.20% | **0.902** | **0.963** |
 | KNN | 83.33% | 85.94% | 79.71% | 86.96% | 0.827 | 0.901 |
 
-</div>
+**Key Insight:** Random Forest provides the best overall balance of detection performance and reliability.
+
+---
+
+## ROC Curve
 
 <p align="center">
-  <img src="images/ROC Curve.png" alt="ROC Curve" width="800"/>
+  <img src="images/roc_curve.png" width="400">
 </p>
 
-### Key Takeaway
-
-Random Forest produces the strongest overall results, with:
-
-- the highest **AUC**  
-- the highest **sensitivity**  
-- the highest **F1-score**  
-- strong specificity with balanced classification performance  
-
-This makes it the most effective model for distinguishing fake from real accounts.
+The Random Forest model achieves the highest AUC, demonstrating strong ability to distinguish between fake and real accounts.
 
 ---
 
-## Feature Interpretation
+## Confusion Matrix (Random Forest)
 
-To better understand model behavior, the following were used:
+<p align="center">
+  <img src="images/confusion_matrix.png" width="400">
+</p>
 
-- **Logistic Regression (odds ratios)**
-- **Random Forest (feature importance using Gini index)**
-
-Key indicators of fake accounts include:
-
-- usernames with numbers  
-- full names matching usernames  
-- higher follow counts  
-
-Random Forest further highlights the importance of profile characteristics and engagement-related features.
-
-This combination of modeling and interpretation connects statistical outputs to recognizable behavioral patterns.
+**Interpretation:**
+- True Positives: correctly identified fake accounts  
+- True Negatives: correctly identified real accounts  
+- Low false positives help protect real users  
+- Low false negatives improve platform safety  
 
 ---
 
-## Decision Science Framing
+## Key Insights
 
-A central objective of this project is to approach model selection through a **decision science perspective**, rather than relying solely on predictive performance.
+- Profile picture strongly indicates real accounts  
+- Usernames with numbers increase likelihood of fake accounts  
+- Fake accounts exhibit distinct behavioral patterns  
 
-Instead of focusing only on:
+---
 
-**“Which model is most accurate?”**
+## Decision Science Perspective
 
-this analysis also considers:
+Model selection was approached as a **trade-off problem**, not just a performance problem.
 
-**“Which model provides the best trade-off between predictive performance and practical deployment cost?”**
+Instead of asking:  
+**Which model is most accurate?**
 
-In real-world applications, model selection must account for multiple factors beyond accuracy, including:
+The analysis focused on:  
+**Which model provides the best balance between performance, reliability, and practical deployment?**
 
-- detection quality  
-- false positive and false negative trade-offs  
-- scalability  
-- computational efficiency  
-- expected operational value  
-
-Random Forest, by contrast, delivers substantially stronger predictive performance while remaining computationally feasible for structured-feature classification problems.
-
-As a result, Random Forest represents the **decision-optimal model**, offering improved fake account detection without requiring an unnecessarily complex or costly modeling pipeline.
+Random Forest delivers the strongest overall performance while remaining computationally practical, making it the **decision-optimal model**.
 
 ---
 
 ## Final Recommendation
 
-Based on model evaluation and decision trade-offs, **Random Forest** is selected as the best model for deployment.
-
-### Why Random Forest?
+**Random Forest** is selected as the optimal model due to:
 
 - Highest overall predictive performance  
-- Best balance between sensitivity and specificity  
-- Strong AUC for classification and ranking  
-- Better practical value than lower-performing alternatives  
-
-This project demonstrates that effective machine learning solutions should be evaluated not only by statistical performance, but also by how well they support **real-world decision-making under operational and cost constraints**.
+- Strong balance between sensitivity and specificity  
+- Robust and scalable modeling approach  
 
 ---
 
-## Tools and Libraries
+## Tools
 
-- **R**
-- `caret`
-- `randomForest`
-- `pROC`
-- `ggplot2`
-- `dplyr`
-- `tidyr`
-- `glmnet`
-- `MLmetrics`
-- `ggcorrplot`
+- R (`caret`, `randomForest`, `pROC`, `ggplot2`, `dplyr`, `tidyr`)
 
 ---
 
 ## Key Skills Demonstrated
 
-- Supervised machine learning  
-- Classification modeling  
-- Model evaluation and comparison  
+- Machine learning (classification)  
+- Model evaluation (AUC, ROC, F1-score)  
 - Feature importance analysis  
 - Exploratory data analysis  
-- Statistical interpretation  
-- Decision science / cost-performance trade-off analysis  
-- Communicating technical findings in a business context  
-
----
-
-## Conclusion
-
-This project demonstrates how machine learning can be applied to a platform trust and safety problem using a structured, decision-oriented workflow. By integrating predictive modeling with performance trade-off analysis, the approach moves beyond simple classification and highlights how data science supports better operational decisions.
-
-The final result is a scalable fake account detection framework that identifies **Random Forest** as the strongest overall solution for balancing **accuracy, robustness, and deployment practicality**.
+- Decision science / trade-off analysis  
