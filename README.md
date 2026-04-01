@@ -33,15 +33,37 @@ This project addresses that challenge by evaluating multiple machine learning mo
 ## Dataset
 
 - 696 Instagram accounts  
-- Balanced dataset (50% fake / 50% real)  
-- No missing values  
+- Balanced dataset (348 fake / 348 real)  
+- No missing values
+
+<p align="center">
+  <img src="images/Percent Distribution.png" width="400">
+</p>
 
 **Key features:**
 - Profile picture  
 - Username patterns  
-- Followers / following  
+- Followers
+- Following
 - Bio length  
-- External URL  
+- External URL
+  
+---
+
+## Exploratory Data Analysis
+
+Initial analysis identified key patterns that distinguish fake and real accounts:
+
+- Accounts with a **profile picture** are significantly less likely to be fake  
+- Usernames containing **numbers** are strong indicators of fake accounts  
+- Fake accounts are less likely to include an **external URL**  
+- Engagement-related features (followers, follows, posts) show distinct distributions  
+
+<p align="center">
+  <img src="images/Correlation Matrix.png" width="400">
+</p>
+
+These patterns highlight that simple, structured features provide strong predictive signals for detecting fraudulent accounts.
 
 ---
 
@@ -74,24 +96,24 @@ This project addresses that challenge by evaluating multiple machine learning mo
 ## ROC Curve
 
 <p align="center">
-  <img src="images/roc_curve.png" width="400">
+  <img src="images/ROC Curve.png" width="400">
 </p>
 
 The Random Forest model achieves the highest AUC, demonstrating strong ability to distinguish between fake and real accounts.
 
 ---
 
-## Confusion Matrix (Random Forest)
+## Confusion Matrices 
 
 <p align="center">
-  <img src="images/confusion_matrix.png" width="400">
+  <img src="images/Confusion Matrix.png" width="400">
 </p>
 
 **Interpretation:**
 - True Positives: correctly identified fake accounts  
 - True Negatives: correctly identified real accounts  
-- Low false positives help protect real users  
-- Low false negatives improve platform safety  
+- False positives help protect real users  
+- False negatives improve platform safety  
 
 ---
 
