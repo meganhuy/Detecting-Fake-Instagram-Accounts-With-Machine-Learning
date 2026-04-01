@@ -37,7 +37,7 @@ This project addresses that challenge by evaluating multiple machine learning mo
 - No missing values
 
 <p align="center">
-  <img src="images/Percent Distribution.png" width="800">
+  <img src="images/Percent Distribution.png" width="600">
 </p>
 
 **Key features:**
@@ -47,7 +47,14 @@ This project addresses that challenge by evaluating multiple machine learning mo
 - Following
 - Bio length  
 - External URL
-  
+
+<p align="center">
+  <img src="images/Distribution of Binary Variables.png" width="600">
+</p>
+
+<p align="center">
+  <img src="images/Histogram of Numerical Variables.png" width="600">
+</p>
 ---
 
 ## Exploratory Data Analysis
