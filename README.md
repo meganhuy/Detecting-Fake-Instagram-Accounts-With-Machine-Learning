@@ -160,8 +160,6 @@ In real-world applications, model selection must account for multiple factors be
 - computational efficiency  
 - expected operational value  
 
-Although KNN may appear attractive from a cost standpoint, it underperforms across key metrics including sensitivity, specificity, F1-score, and AUC.
-
 Random Forest, by contrast, delivers substantially stronger predictive performance while remaining computationally feasible for structured-feature classification problems.
 
 As a result, Random Forest represents the **decision-optimal model**, offering improved fake account detection without requiring an unnecessarily complex or costly modeling pipeline.
