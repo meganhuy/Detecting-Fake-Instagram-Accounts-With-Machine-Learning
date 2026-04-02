@@ -104,16 +104,6 @@ The Random Forest model achieves the highest AUC, demonstrating strong ability t
 
 ## Confusion Matrices 
 
-<p align="center">
-  <img src="images/Confusion Matrix.png" width="800">
-</p>
-
-**Interpretation:**
-- True Positives: correctly identified fake accounts  
-- True Negatives: correctly identified real accounts  
-- False Positives: help protect real users  
-- False Negatives: improve platform safety  
-
 ---
 
 ## Key Insights
